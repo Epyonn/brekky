@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ThreeJS Starter</title>
+
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+    <link rel="stylesheet" type="text/css" href="./style.css" />
+    <script src="./script.js"></script>
+
+    <script>
+
+var key = "addy";
+  var locations = [];
+  var counter = 0;
+  
+  
+ function initMap(){
+  var options = {
+    zoom: 13,
+    center: { lat: 37.8044, lng: -122.2712 },
+    mapTypeControl: false,
+    streetViewcontrol: false,
+    
+    styles: [
+      { elementType: "geometry", stylers: [{ color: "#242f3e" }] },
+      { elementType: "labels.text.stroke", stylers: [{ color: "#242f3e" }] },
+      { elementType: "labels.text.fill", stylers: [{ color: "#3454e2" }] }, //brown to blue distrct names 
+      {
+        featureType: "administrative.locality",
+        elementType: "labels.text.fill",
+        stylers: [{ color: "#7ce635" }], //green city names
+      },
+      {
+        featureType: "poi",
+        elementType: "labels.text.fill",
+        stylers: [{ color: "#7ce635" }], // orange change to green location names
+      },
+      {
+        featureType: "poi.park",
+        elementType: "geometry",
+        stylers: [{ color: "#263c3f" }],
+      },
+      {
+        featureType: "poi.park",
+        elementType: "labels.text.fill",
+        stylers: [{ color: "#6b9a76" }],
+      },
+      {
+        featureType: "road",
+        elementType: "geometry",
+        stylers: [{ color: "#38414e" }], //gray
+      },
+      {
+        featureType: "road",
+        elementType: "geometry.stroke",
+        stylers: [{ color: "#212a37" }], //dark blue
+      },
+      {
+        featureType: "road",
+        elementType: "labels.text.fill",
+        stylers: [{ color: "#38414e" }], //white street names to red
+      },
+      {
+        featureType: "road.highway",
+        elementType: "geometry",
+        stylers: [{ color: "#99a12e" }], //yellow highway names
+      },
+      {
+        featureType: "road.highway",
+        elementType: "geometry.stroke",
+        stylers: [{ color: "#1f2835" }],
+      },
+      {
+        featureType: "road.highway",
+        elementType: "labels.text.fill",
+        stylers: [{ color: "#f3d19c" }],
+      },
+      {
+        featureType: "transit",
+        elementType: "geometry",
+        stylers: [{ color: "#2f3948" }],
+      },
+      {
+        featureType: "transit.station",
+        elementType: "labels.text.fill",
+        stylers: [{ color: "#d59563" }],
+      },
+      {
+        featureType: "water",
+        elementType: "geometry",
+        stylers: [{ color: "#17263c" }],
+      },
+      {
+        featureType: "water",
+        elementType: "labels.text.fill",
+        stylers: [{ color: "#515c6d" }],
+      },
+      {
+        featureType: "water",
+        elementType: "labels.text.stroke",
+        stylers: [{ color: "#17263c" }],
+      },
+    ],
+
+  }
+  var map = new 
+  google.maps.Map(document.getElementById('map'),options);
+
+
+  const geocoder = new google.maps.Geocoder();
+  
+  if(localStorage.length > 1){ //checks to see if anyting in local storage
+    geocodeAddressLocal(geocoder,map);
+  
+  } 
+
+  document.getElementById("submit").addEventListener("click",() =>{ //listens for click submit button
+    const address = document.getElementById("address").value;
+    /*locations.push(address)
+    localStorage.setItem(key, locations )
+    */
+    setJSON(key, address);
+    geocodeAddress(geocoder,map);
+    });
+  
+  document.getElementById("address").addEventListener('keypress', function(event) { //listens for enter key in text box
+    if(event.key === "Enter"){
+      const address = document.getElementById("address").value;
+      /*locations.push(address)
+      localStorage.setItem(key,locations )
+      */
+      setJSON(key, address);
+
+      geocodeAddress(geocoder,map);
+    }
+  });
+
+  //ends if else
+
+}
+
+  function geocodeAddress(geocoder, resultsMap){
+    const address = document.getElementById("address").value; /* gets html address value */
+    
+    geocoder.geocode({address:address},(results, status)=> {
+      if(status === "OK"){
+        resultsMap.setCenter(results[0].geometry.location);
+          new google.maps.Marker({
+            map: resultsMap,
+            position: results[0].geometry.location,
+            mapTypeControl: false,
+            streetViewcontrol: false,
+            styles: [
+              { elementType: "geometry", stylers: [{ color: "#242f3e" }] },
+              { elementType: "labels.text.stroke", stylers: [{ color: "#242f3e" }] },
+              { elementType: "labels.text.fill", stylers: [{ color: "#746855" }] },
+              {
+                featureType: "administrative.locality",
+                elementType: "labels.text.fill",
+                stylers: [{ color: "#d59563" }],
+              },
+              {
+                featureType: "poi",
+                elementType: "labels.text.fill",
+                stylers: [{ color: "#d59563" }],
+              },
+              {
+                featureType: "poi.park",
+                elementType: "geometry",
+                stylers: [{ color: "#263c3f" }],
+              },
+              {
+                featureType: "poi.park",
+                elementType: "labels.text.fill",
+                stylers: [{ color: "#6b9a76" }],
+              },
+              {
+                featureType: "road",
+                elementType: "geometry",
+                stylers: [{ color: "#38414e" }],
+              },
+              {
+                featureType: "road",
+                elementType: "geometry.stroke",
+                stylers: [{ color: "#212a37" }],
+              },
+              {
+                featureType: "road",
+                elementType: "labels.text.fill",
+                stylers: [{ color: "#9ca5b3" }],
+              },
+              {
+                featureType: "road.highway",
+                elementType: "geometry",
+                stylers: [{ color: "#746855" }],
+              },
+              {
+                featureType: "road.highway",
+                elementType: "geometry.stroke",
+                stylers: [{ color: "#1f2835" }],
+              },
+              {
+                featureType: "road.highway",
+                elementType: "labels.text.fill",
+                stylers: [{ color: "#f3d19c" }],
+              },
+              {
+                featureType: "transit",
+                elementType: "geometry",
+                stylers: [{ color: "#2f3948" }],
+              },
+              {
+                featureType: "transit.station",
+                elementType: "labels.text.fill",
+                stylers: [{ color: "#d59563" }],
+              },
+              {
+                featureType: "water",
+                elementType: "geometry",
+                stylers: [{ color: "#17263c" }],
+              },
+              {
+                featureType: "water",
+                elementType: "labels.text.fill",
+                stylers: [{ color: "#515c6d" }],
+              },
+              {
+                featureType: "water",
+                elementType: "labels.text.stroke",
+                stylers: [{ color: "#17263c" }],
+              },
+            ]
+          });
+        } else {
+          alert("geocode was not sucecessful for following reason" + status);
+        }
+      });
+  }
+
+
+  function geocodeAddressLocal(geocoder, resultsMap){ //
+
+    for(var i = 0; i < localStorage.length; i++){
+      locations.push(localStorage.getItem(localStorage.key(i)));
+      console.log(locations[i]);
+    
+    geocoder.geocode({address:locations[i]},(results, status)=> {
+      if(status === "OK"){
+        resultsMap.setCenter(results[0].geometry.location);
+          new google.maps.Marker({
+            map: resultsMap,
+            position: results[0].geometry.location,
+            mapTypeControl: false,
+            streetViewcontrol: false,
+            styles: [
+              { elementType: "geometry", stylers: [{ color: "#242f3e" }] },
+              { elementType: "labels.text.stroke", stylers: [{ color: "#242f3e" }] },
+              { elementType: "labels.text.fill", stylers: [{ color: "#746855" }] },
+              {
+                featureType: "administrative.locality",
+                elementType: "labels.text.fill",
+                stylers: [{ color: "#d59563" }],
+              },
+              {
+                featureType: "poi",
+                elementType: "labels.text.fill",
+                stylers: [{ color: "#d59563" }],
+              },
+              {
+                featureType: "poi.park",
+                elementType: "geometry",
+                stylers: [{ color: "#263c3f" }],
+              },
+              {
+                featureType: "poi.park",
+                elementType: "labels.text.fill",
+                stylers: [{ color: "#6b9a76" }],
+              },
+              {
+                featureType: "road",
+                elementType: "geometry",
+                stylers: [{ color: "#38414e" }],
+              },
+              {
+                featureType: "road",
+                elementType: "geometry.stroke",
+                stylers: [{ color: "#212a37" }],
+              },
+              {
+                featureType: "road",
+                elementType: "labels.text.fill",
+                stylers: [{ color: "#9ca5b3" }],
+              },
+              {
+                featureType: "road.highway",
+                elementType: "geometry",
+                stylers: [{ color: "#746855" }],
+              },
+              {
+                featureType: "road.highway",
+                elementType: "geometry.stroke",
+                stylers: [{ color: "#1f2835" }],
+              },
+              {
+                featureType: "road.highway",
+                elementType: "labels.text.fill",
+                stylers: [{ color: "#f3d19c" }],
+              },
+              {
+                featureType: "transit",
+                elementType: "geometry",
+                stylers: [{ color: "#2f3948" }],
+              },
+              {
+                featureType: "transit.station",
+                elementType: "labels.text.fill",
+                stylers: [{ color: "#d59563" }],
+              },
+              {
+                featureType: "water",
+                elementType: "geometry",
+                stylers: [{ color: "#17263c" }],
+              },
+              {
+                featureType: "water",
+                elementType: "labels.text.fill",
+                stylers: [{ color: "#515c6d" }],
+              },
+              {
+                featureType: "water",
+                elementType: "labels.text.stroke",
+                stylers: [{ color: "#17263c" }],
+              },
+            ]
+
+          });
+        } else {
+          alert("geocode was not sucecessful for following reason" + status);
+        }
+      });
+    }
+  }
+
+/*
+function log_location(){ //saves properties of objects in local storage
+  for(var i = 0; i < localStorage.length; i++){
+  locations.push(localStorage.getItem(localStorage.key(i)));
+  console.log(locations[i]);
+  }
+};
+
+log_location(); 
+*/
+
+
+  function setJSON(customCoords, coordinates) {
+    customCoords = 'customCoords' + counter;
+    counter++;
+      window.localStorage.setItem(customCoords, 
+      JSON.stringify(coordinates));
+  };
+
+
+
+
+      </script>
+    
+</head>
+<body>
+    <div class="container">
+        <div class="intro">
+            <h1>Break Out</h1>
+            <p>Breaking out from the increasing trend of break-ins. <br> Theft sucks, report it here.</p>
+          
+        </div>
+
+        <div id="floating-panel">
+      
+            <input id="address" type="textbox" placeholder="Enter Location"
+            onfocus="this.placeholder=''" 
+            onblur="this.placeholder='Enter Location'" />
+            <input id="submit" type="button" value="Report"/>
+        </div>
+        <div id="map"></div>
+    </div>
+
+
+    
+
+    <!-- Async script executes immediately and must be after any DOM elements used in callback. -->
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCLu25wqirs0pAPnvjvH4hV4Se7Kcpzmps&callback=initMap&libraries=&v=weekly"
+      async
+    ></script>
+
+    <canvas class="webgl"></canvas>
+    <script src= "https://cdnjs.cloudflare.com/ajax/libs/gsap/3.6.1/gsap.min.js"></script>
+    <script src= "https://cdnjs.cloudflare.com/ajax/libs/gsap/3.6.1/CSSRulePlugin.min.js"></script>
+
+    <script>
+    
+    const intro = CSSRulePlugin.getRule('#address')
+    const content = CSSRulePlugin.getRule('.intro:before')
+    const h1 = document.querySelector('h1')
+    const p = document.querySelector('p')
+    const tl = gsap.timeline()
+    
+    tl.from(content, {delay:.5, duration: 2, cssRule:{scaleX:0 }})
+    tl.from(intro, {delay:.1, duration: 1, cssRule:{scaleX:0 }})
+    
+    tl.to(h1,{duration: 2, clipPath:'polygon(0 0, 100% 0, 100% 100%, 0 100%)', y:'30px'},"-=3")
+    tl.to(p,{duration: 4, clipPath:'polygon(0 0, 100% 0, 100% 100%, 0 100%)',y:'30px'},"-=2")
+
+    </script>
+
+
+</body>
+</html>
